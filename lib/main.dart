@@ -77,41 +77,69 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('Recipe Book')),
       backgroundColor: Colors.orange[50],
-      body: ListView.builder(
-        itemCount: recipes.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            leading: Image.network(
-              recipeImages[recipes[index]]!,
-              width: 50,
-              height: 50,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) =>
-                  Icon(Icons.image_not_supported), // Show fallback icon
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: recipes.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: Image.network(
+                    recipeImages[recipes[index]]!,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        Icon(Icons.image_not_supported),
+                  ),
+                  title: Text(recipes[index]),
+                  trailing: Icon(
+                    favoriteRecipes.contains(recipes[index])
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color: favoriteRecipes.contains(recipes[index])
+                        ? Colors.red
+                        : null,
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailsScreen(
+                          recipeName: recipes[index],
+                          isFavorite: favoriteRecipes.contains(recipes[index]),
+                          toggleFavorite: toggleFavorite,
+                          imageUrl: recipeImages[recipes[index]]!,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
-            title: Text(recipes[index]),
-            trailing: Icon(
-              favoriteRecipes.contains(recipes[index])
-                  ? Icons.favorite
-                  : Icons.favorite_border,
-              color:
-                  favoriteRecipes.contains(recipes[index]) ? Colors.red : null,
-            ),
-            onTap: () {
+          ),
+          SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DetailsScreen(
-                    recipeName: recipes[index],
-                    isFavorite: favoriteRecipes.contains(recipes[index]),
-                    toggleFavorite: toggleFavorite,
-                    imageUrl: recipeImages[recipes[index]]!,
+                  builder: (context) => FavoritesScreen(
+                    favoriteRecipes: favoriteRecipes,
                   ),
                 ),
               );
             },
-          );
-        },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+              textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            child: Text('View Favorites'),
+          ),
+          SizedBox(height: 20),
+        ],
       ),
     );
   }
